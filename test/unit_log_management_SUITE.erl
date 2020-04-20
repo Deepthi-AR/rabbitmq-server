@@ -138,6 +138,9 @@ log_management1(_Config) ->
 
     %% simple log rotation
     ok = rabbit:rotate_logs(),
+    %% rabbit:rotate_logs/0 is asynchronous due to a limitation in
+    %% Lager. Therefore, we have no choice but to wait an arbitrary
+    %% amount of time.
     ok = await_condition(
            fun() ->
                    [true, true] =:=
@@ -148,9 +151,6 @@ log_management1(_Config) ->
     %% log rotation on empty files
     ok = clean_logs([LogFile], Suffix),
     ok = rabbit:rotate_logs(),
-    %% rabbit:rotate_logs/0 is asynchronous due to a limitation in
-    %% Lager. Therefore, we have no choice but to wait an arbitrary
-    %% amount of time.
     ok = await_condition(
            fun() ->
                    [true, true] =:=
